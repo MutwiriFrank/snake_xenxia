@@ -15,7 +15,7 @@ class cube():
     rows = 20
     w = 500
     def __init__ (self, start, dirnx = 0, dirny=0, color=(255,0,0) ):
-        self.pos = start
+        self.pos = start  #  position is a tupple
         self.dirnx = 1
         self.dirny = 0
         self.color = color
@@ -23,16 +23,16 @@ class cube():
     def move(self, dirnx, dirny ) :
         self.dirnx = dirnx
         self.dirny = dirny
-        self.pos = (self.pos[0] + self.dirnx,  self.pos[1] + self.dirny) # new pos = actual pos + direction X & Y
+        self.pos  = (self.pos[0] + self.dirnx, self.pos[1] + self.dirny) # new pos = actual pos + direction X & Y
        
     def draw(self, surface, eyes = False):
         dis = self.w // self.rows
-        print (self.pos, type(self.pos))
+        # print (self.pos, type(self.pos))
         i = self.pos[0]
-        print(i)
+        # print(i)
         
         j = self.pos[1]
-        print(j)
+        # print(j)
 
         pygame.draw.rect(surface, self.color, (i*dis+1, j*dis+1, dis-2, dis-2) )
         if eyes:
@@ -43,6 +43,7 @@ class cube():
             pygame.draw.circle(surface, (0,0,0) ,  circleMiddle, radius) 
             pygame.draw.circle(surface, (0,0,0) ,  circleMiddle2, radius)
 
+        
 class snake():
     body = []
     turns = {}
@@ -66,7 +67,10 @@ class snake():
                 if keys[pygame.K_LEFT]:
                     self.dirnx = -1
                     self.dirny = 0
-                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]
+                    self.turns[self.head.pos[:]] = [self.dirnx, self.dirny]  # creating a dictionary with the key being the position of snake 
+                    print(self.turns)                                                      # head anf value being the direction
+                                                                            # print(self.turns)  -- {(17, 1): [-1, 0]}
+
 
                 elif keys[pygame.K_RIGHT]:
                     self.dirnx = 1
@@ -85,10 +89,11 @@ class snake():
 
         for i,c in enumerate(self.body):
             p = c.pos[:]
+            print("p is",p)
 
             if p in self.turns:
                 turn = self.turns[p]
-                c.move(turn[0], turn[1])  # move the body segment in tun[0](x value for turn) and tun[1](y value for turn)
+                c.move(turn[0], turn[1])  # move the body segment in turn position to turn direction
                 if i == len(self.body)-1: # if on last cube remove that turn on the turns   list
                     self.turns.pop(p)
             
@@ -109,7 +114,13 @@ class snake():
                 c.move(c.dirnx, c.dirny)
     
     def reset(self, pos):
-        pass
+        self.head = cube(pos)
+        self.body = []
+        self.body.append(self.head)
+        self.turns = {}
+        self.dirnx = 0
+        self.dirny= 1
+
         
     def addCube(self):
         tail = self.body[-1]
@@ -137,7 +148,83 @@ class snake():
             else:
                 c.draw(surface)
 
+# class snake():
+#     body = []
+#     turns = {}
+    
+#     def __init__(self, color, pos):
+#         #pos is given as coordinates on the grid ex (1,5)
+#         self.color = color
+#         self.head = cube(pos)
+#         self.body.append(self.head)
+#         self.dirnx = 0
+#         self.dirny = 1
+    
+#     def move(self):
+#         for event in pygame.event.get():
+#             if event.type == pygame.QUIT:
+#                 pygame.quit()
+#             keys = pygame.key.get_pressed()
 
+#             for key in keys:
+#                 if keys[pygame.K_LEFT]:
+#                     self.dirnx = -1
+#                     self.dirny = 0
+#                     self.turns[self.head.pos[:]] = [self.dirnx,self.dirny]
+#                 elif keys[pygame.K_RIGHT]:
+#                     self.dirnx = 1
+#                     self.dirny = 0
+#                     self.turns[self.head.pos[:]] = [self.dirnx,self.dirny]
+#                 elif keys[pygame.K_UP]:
+#                     self.dirny = -1
+#                     self.dirnx = 0
+#                     self.turns[self.head.pos[:]] = [self.dirnx,self.dirny]
+#                 elif keys[pygame.K_DOWN]:
+#                     self.dirny = 1
+#                     self.dirnx = 0
+#                     self.turns[self.head.pos[:]] = [self.dirnx,self.dirny]
+        
+#         for i, c in enumerate(self.body):
+#             p = c.pos[:]
+#             if p in self.turns:
+#                 turn = self.turns[p]
+#                 c.move(turn[0], turn[1])
+#                 if i == len(self.body)-1:
+#                     self.turns.pop(p)
+#             else:
+#                 c.move(c.dirnx,c.dirny)
+        
+        
+#     def reset(self,pos):
+#         self.head = cube(pos)
+#         self.body = []
+#         self.body.append(self.head)
+#         self.turns = {}
+#         self.dirnx = 0
+#         self.dirny = 1
+
+#     def addCube(self):
+#         tail = self.body[-1]
+#         dx, dy = tail.dirnx, tail.dirny
+
+#         if dx == 1 and dy == 0:
+#             self.body.append(cube((tail.pos[0]-1,tail.pos[1])))
+#         elif dx == -1 and dy == 0:
+#             self.body.append(cube((tail.pos[0]+1,tail.pos[1])))
+#         elif dx == 0 and dy == 1:
+#             self.body.append(cube((tail.pos[0],tail.pos[1]-1)))
+#         elif dx == 0 and dy == -1:
+#             self.body.append(cube((tail.pos[0],tail.pos[1]+1)))
+
+#         self.body[-1].dirnx = dx
+#         self.body[-1].dirny = dy
+    
+#     def draw(self, surface):
+#         for i,c in enumerate(self.body):
+#             if i == 0:
+#                 c.draw(surface, True)
+#             else:
+#                 c.draw(surface)
 
 def drawgrid(w, rows, surface): 
     sizeBtn = w // rows
@@ -166,13 +253,22 @@ def randomSnack(rows, item):  # creating a random position
         x = random.randrange(rows)
         y = random.randrange(rows)
 
-        if len(list(filter(lambda z:z.pos== (x,y), positions ))) > 0:
+        # filtering out snake position when determining snack position
+        if len(list(filter(lambda z:z.pos== (x,y), positions ))) > 0:  
             continue
         else:
             break
     return (x,y)
 
-
+def message_box(subject, content):
+    root = tk.Tk()
+    root.attributes("-topmost", True)
+    root.withdraw()
+    messagebox.showinfo(subject, content)
+    try:
+        root.destroy()
+    except:
+        pass
 
 def main():
     global width, rows, s, snack
@@ -186,11 +282,16 @@ def main():
     clock = pygame.time.Clock()
 
     while flag:
-        pygame.time.delay(50)
-        clock.tick(10)
+        pygame.time.delay(100)
+        clock.tick(50)
         s.move()
-        if s.body[0].pos == snack.pos:  # if head position == snack position
-           
+        for x in range(len(s.body)):
+            if s.body[x].pos  in  list(map(lambda z: z.pos , s.body[x+1:] )):
+                print('Score: ', len(s.body))
+                message_box('You Lost!', 'Play again')
+                s.reset((10,10))
+                break
+        if s.body[0].pos == snack.pos:  # if head position == snack position          
             s.addCube()
             snack = cube(randomSnack(rows, s), color=(0,255,0)) 
         redrawWindow(win)
